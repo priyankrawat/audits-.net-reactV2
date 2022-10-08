@@ -1,8 +1,16 @@
+using audits_.net_react_ramine.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddDbContext<UserContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddCors();
 
 var app = builder.Build();
 
