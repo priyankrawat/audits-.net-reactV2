@@ -105,25 +105,6 @@
     "workbox-strategies": "^6.5.3",
     "workbox-streams": "^6.5.3"
   },
-  "devDependencies": {
-    "ajv": "^8.11.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^8.18.0",
-    "eslint-config-react-app": "^7.0.1",
-    "eslint-plugin-flowtype": "^8.0.3",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.6.0",
-    "eslint-plugin-react": "^7.30.1",
-    "nan": "^2.16.0",
-    "typescript": "^4.7.4"
-  },
-  "overrides": {
-    "autoprefixer": "10.4.5"
-  },
-  "resolutions": {
-    "css-what": "^5.0.1",
-    "nth-check": "^3.0.1"
-  },
   "scripts": {
     "prestart": "node aspnetcore-https && node aspnetcore-react",
     "start": "rimraf ./build && react-scripts start",
@@ -132,10 +113,97 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src/"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/src-client"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "testMatch": [
+      "<rootDir>/src-client/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src-client/**/*.{spec,test}.{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
+      "^.+\\.module\\.(css|sass|scss)$"
+    ],
+    "modulePaths": [],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
+    "resetMocks": true
+  },
   "eslintConfig": {
-    "extends": [
-      "react-app"
+    "extends": "airbnb",
+    "env": {
+      "browser": true,
+      "node": true,
+      "jest": true
+    },
+    "rules": {
+      "comma-dangle": "off",
+      "no-console": "off",
+      "global-require": "off",
+      "react/jsx-props-no-spreading": "off",
+      "jsx-a11y/label-has-for": [
+        "error",
+        {
+          "required": {
+            "every": []
+          }
+        }
+      ],
+      "jsx-a11y/label-has-associated-control": "off",
+      "react/prefer-stateless-function": "warn",
+      "no-param-reassign": [
+        "error",
+        {
+          "props": false
+        }
+      ]
+    }
+  },
+  "proxy": "http://localhost:5000",
+  "babel": {
+    "presets": [
+      "airbnb"
     ]
+  },
+  "devDependencies": {
+    "husky": "^4.3.0"
   },
   "browserslist": {
     "production": [
