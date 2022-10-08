@@ -39,13 +39,28 @@ public class AuthController : ApplicationController
             Token = token
         };
     }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<User>> Me()
+    {
+        var user = await CurrentUser();
+        if (user is null)
+        {
+            return Ok(new {});
+        }
+
+        return user;
+    }
+
     private string GenerateToken(User user)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Email)
+            new Claim(ClaimTypes.NameIdentifier, user.Email),
+            new Claim("id", user.Id.ToString())
         };
 
         var token = new JwtSecurityToken(_config["Jwt:Issuer"],
