@@ -10,9 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var AllowAllCors = "_AllowAllCors";
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<UserContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        options.UseNpgsql(connectionString)
+               .UseSnakeCaseNamingConvention());
+builder.Services.AddDbContext<ProjectContext>(options =>
+        options.UseNpgsql(connectionString)
                .UseSnakeCaseNamingConvention());
 
 builder.Services.AddControllersWithViews();
@@ -24,10 +28,12 @@ builder.Services.AddCors(options =>
         {
             builder
             .AllowAnyOrigin()
-            .AllowAnyMethod()
+            .WithMethods(new[] { "GET", "POST", "PATCH", "PUT"})
             .AllowAnyHeader();
         });
 });
+
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -56,13 +62,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseCors(AllowAllCors);
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();
