@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using audits_.net_react_ramine.Data;
@@ -11,9 +12,10 @@ using audits_.net_react_ramine.Data;
 namespace audits_.net_react_ramine.Migrations
 {
     [DbContext(typeof(AuditsDbContext))]
-    partial class AuditsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221009055424_CreateAuditsTable")]
+    partial class CreateAuditsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
