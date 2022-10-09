@@ -40,6 +40,13 @@ public class AuthController : ApplicationController
         };
     }
 
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public ActionResult Register()
+    {
+        return Ok();
+    }
+
     [HttpGet("me")]
     [Authorize]
     public async Task<ActionResult<User>> Me()
