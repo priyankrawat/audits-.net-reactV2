@@ -10,13 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var AllowAllCors = "_AllowAllCors";
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<UserContext>(options =>
-        options.UseNpgsql(connectionString)
-               .UseSnakeCaseNamingConvention());
-builder.Services.AddDbContext<ProjectContext>(options =>
-        options.UseNpgsql(connectionString)
+builder.Services.AddDbContext<AuditsDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
                .UseSnakeCaseNamingConvention());
 
 builder.Services.AddControllersWithViews();
@@ -51,6 +46,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 });
 
 var app = builder.Build();
+
+using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
+{
+    var context = serviceScope.ServiceProvider.GetRequiredService<AuditsDbContext>();
+    context.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -9,15 +9,13 @@ namespace audits_.net_react_ramine.Controllers;
 [Route("api/projects")]
 public class ProjectsController : ApplicationController
 {
-	private readonly ProjectContext _projectContext;
-	public ProjectsController(ProjectContext projectContext, UserContext userContext) : base(userContext)
+	public ProjectsController(AuditsDbContext auditsDbContext) : base(auditsDbContext)
     {
-		_projectContext = projectContext;
 	}
 
 	[HttpGet]
 	public async Task<ActionResult<List<Project>>> GetProjects()
 	{
-		return await _projectContext.Projects.ToListAsync();
+		return await AuditsDbContext.Projects.ToListAsync();
 	}
 }

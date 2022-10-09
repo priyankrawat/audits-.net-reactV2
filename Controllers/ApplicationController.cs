@@ -9,10 +9,10 @@ namespace audits_.net_react_ramine.Controllers;
 [Authorize]
 public class ApplicationController : ControllerBase
 {
-    protected UserContext UserContext { get; set; }
-    public ApplicationController(UserContext userContext)
+    protected AuditsDbContext AuditsDbContext { get; set; }
+    public ApplicationController(AuditsDbContext auditsDbContext)
     {
-        UserContext = userContext;
+        AuditsDbContext = auditsDbContext;
     }
 
     public async Task<User?> CurrentUser()
@@ -22,6 +22,6 @@ public class ApplicationController : ControllerBase
         {
             return null;
         }
-        return await UserContext.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
+        return await AuditsDbContext.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
     }
 }

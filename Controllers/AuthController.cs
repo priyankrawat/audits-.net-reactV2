@@ -17,7 +17,7 @@ namespace audits_.net_react_ramine.Controllers;
 public class AuthController : ApplicationController
 {
     private readonly IConfiguration _config;
-    public AuthController(IConfiguration config, UserContext userContext) : base(userContext)
+    public AuthController(IConfiguration config, AuditsDbContext auditsDbContext) : base(auditsDbContext)
     {
         _config = config;
     }
@@ -26,7 +26,7 @@ public class AuthController : ApplicationController
     [AllowAnonymous]
     public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
     {
-        var user = await UserContext.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.Password == request.Password);
+        var user = await AuditsDbContext.Users.FirstOrDefaultAsync(x => x.Email == request.Email && x.Password == request.Password);
         if (user == null)
         {
             return Unauthorized("Unauthorized");
