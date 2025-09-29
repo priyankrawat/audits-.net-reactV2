@@ -2,7 +2,6 @@
 
 public class Filters
 {
-    public string Message { get; set; }
-
-    internal bool Valid() => Message != null && Message != string.Empty;
+    public string? Message { get; set; }
+    public string? Status { get; set; }
 }

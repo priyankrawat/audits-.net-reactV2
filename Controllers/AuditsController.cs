@@ -1,8 +1,10 @@
 ﻿using audits_.net_react_ramine.Data;
 using audits_.net_react_ramine.Models;
 using audits_.net_react_ramine.Requests;
+using Baseline;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace audits_.net_react_ramine.Controllers;
@@ -21,13 +23,27 @@ public class AuditsController : ApplicationController
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult<List<Audit>>> FilterAudits(AuditRequest filter)
+    public async Task<ActionResult<List<Audit>>> FilterAudits([FromBody(EmptyBodyBehavior = EmptyBodyBehavior.Allow)] AuditRequest? filter)
     {
-        List<Audit> records = new();
-        if (filter.Query.Filters.Valid())
-            records = await AuditsDbContext.Audits.Where(x => x.Message.ToLower().Contains(filter.Query.Filters.Message.ToLower())).ToListAsync();
+        var query = "SELECT * FROM audits";
+
+        var filter_parts = new List<string>();
+
+        if(filter?.Query.Filters.Message != null)
+        {
+            filter_parts.Add($"message ILIKE '{filter.Query.Filters.Message}%'");
+        }
         else
-            records = await AuditsDbContext.Audits.ToListAsync();
+        {
+            filter_parts.Add($"status='{filter?.Query.Filters.Status}'");
+        }
+
+        if(filter_parts.Any())
+        {
+            query += $"\nWHERE {filter_parts.Join(" AND ")}";
+        }
+
+        var records = await AuditsDbContext.Audits.FromSqlRaw(query).ToListAsync();
 
         return records;
     }
