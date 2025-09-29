@@ -1,10 +1,12 @@
 ﻿using audits_.net_react_ramine.Data;
 using audits_.net_react_ramine.Models;
 using audits_.net_react_ramine.Requests;
+using audits_.net_react_ramine.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Reflection;
 
 namespace audits_.net_react_ramine.Controllers;
 
@@ -21,37 +23,38 @@ public class SettingsController : ApplicationController
     public async Task<ActionResult<Setting[]>> IndexAsync()
     {
         var currentUser = await CurrentUser();
-        return new[] { new Setting { DailyEmailUpdates = currentUser.DailyEmailUpdates ?? false } };
+        return new[] { currentUser.Setting };
     }
 
     [HttpPut("{settingName}")]
     public async Task<ActionResult<bool>> UpdateAsync([FromRoute] string settingName, [FromBody] SettingRequest request)
     {
-        var currentUser = await CurrentUser();
-        var command = $"UPDATE users SET {settingName} = @value WHERE users.id = @userId";
-        NpgsqlParameter valueSqlParams;
         if (request.Value is null)
         {
-            valueSqlParams = new NpgsqlParameter("@value", DBNull.Value);
+            return default;
         }
-        else
-        {
-            if (settingName == "daily_email_updates")
-            {
-                valueSqlParams = new NpgsqlParameter("@value", bool.Parse(request.Value.ToString()!));
-            }
-            else
-            {
-                valueSqlParams = new NpgsqlParameter("@value", request.Value.ToString());
-            }
-        }
-        var userIdSqlParams = new NpgsqlParameter("@userId", currentUser!.Id);
-        var result = await AuditsDbContext.Database.ExecuteSqlRawAsync(command, new[]
-        {
-            valueSqlParams,
-            userIdSqlParams
-        });
 
-        return result > 0;
+        var currentUser = await CurrentUser();
+        var setting = currentUser.Setting ?? new Setting
+        {
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var prop = setting.GetType()
+                .GetProperty(SnakeCaseToPascalCase(settingName));
+        var value = Convert.ChangeType(request.Value?.ToString(), prop.PropertyType);
+        prop.SetValue(setting, value, null);
+
+        currentUser.Setting = setting;
+        return await AuditsDbContext.SaveChangesAsync() > 0;
+    }
+
+    private static string SnakeCaseToPascalCase(string str)
+    {
+        return string.Concat(
+            str.Split('_')
+            .Select(Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase)
+        );
     }
 }

@@ -22,6 +22,6 @@ public class ApplicationController : ControllerBase
         {
             return null;
         }
-        return await AuditsDbContext.Users.FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
+        return await AuditsDbContext.Users.Include(user => user.Setting).FirstOrDefaultAsync(x => x.Id == int.Parse(userId));
     }
 }

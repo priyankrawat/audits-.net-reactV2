@@ -8,6 +8,7 @@ public class AuditsDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<Audit> Audits { get; set; }
+    public DbSet<Setting> Settings { get; set; }
 
     public AuditsDbContext(DbContextOptions<AuditsDbContext> options) : base(options)
     {
@@ -15,6 +16,9 @@ public class AuditsDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Setting);
+
         modelBuilder.Entity<User>()
             .HasData(new User
             {
@@ -26,6 +30,7 @@ public class AuditsDbContext : DbContext
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             });
+
         modelBuilder.Entity<User>()
             .HasData(new User
             {

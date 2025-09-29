@@ -7,18 +7,23 @@ const useFetch = (url) => {
   const isLoaded = useRef(false);
 
   const fetchSettings = async () => {
+    console.log('Fetching settings');
     const response = await API.get(url);
     /* eslint-disable no-debugger */
     // debugger;
     const { data } = response;
     /* eslint-disable camelcase */
-    const dailyEmailUpdates = data[0].daily_email_updates;
+    let dailyEmailUpdates;
+    if (data[0]) {
+      dailyEmailUpdates = data[0].daily_email_updates;
+    }
     setSettings({ daily_email_updates: dailyEmailUpdates });
     isLoaded.current = true;
   };
 
   const updateSettings = async () => {
     if (isLoaded.current) {
+      console.log('Updating settings: ', settings);
       await API.put(`${url}/daily_email_updates`, {
         value: settings.daily_email_updates,
       });
