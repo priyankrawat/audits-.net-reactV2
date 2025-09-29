@@ -7,7 +7,6 @@ const useFetch = (url) => {
   const isLoaded = useRef(false);
 
   const fetchSettings = async () => {
-    console.log('Fetching settings');
     const response = await API.get(url);
     /* eslint-disable no-debugger */
     // debugger;
@@ -20,7 +19,6 @@ const useFetch = (url) => {
 
   const updateSettings = async () => {
     if (isLoaded.current) {
-      console.log('Updating settings: ', settings);
       await API.put(`${url}/daily_email_updates`, {
         value: settings.daily_email_updates,
       });
