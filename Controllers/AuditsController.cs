@@ -29,13 +29,16 @@ public class AuditsController : ApplicationController
 
         var filter_parts = new List<string>();
 
-        if(filter?.Query.Filters.Message != null)
+        if (filter?.Query.Filters.Message != null)
         {
             filter_parts.Add($"message ILIKE '{filter.Query.Filters.Message}%'");
         }
-        else
+        else 
         {
-            filter_parts.Add($"status='{filter?.Query.Filters.Status}'");
+            if(filter?.Query?.Filters?.Status != null)
+            {
+                filter_parts.Add($"status='{filter.Query.Filters.Status}'");
+            }
         }
 
         if(filter_parts.Any())
