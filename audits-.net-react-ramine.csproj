@@ -30,9 +30,17 @@
   </ItemGroup>
 
   <ItemGroup>
+	<InternalsVisibleTo Include="audits-.net-react-ramine.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="audits-.net-react-ramine-tests\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="audits-.net-react-ramine-tests\**" />
+    <EmbeddedResource Remove="audits-.net-react-ramine-tests\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="audits-.net-react-ramine-tests\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
