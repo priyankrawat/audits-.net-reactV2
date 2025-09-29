@@ -22,6 +22,19 @@ class AuditTable extends React.Component {
     this.fetchAudits();
   }
 
+  componentDidMount() {
+    API.get('/api/settings')
+      .then((settings) => {
+        this.setState((prevState) => ({
+          ...prevState,
+          pagination: {
+            ...prevState.pagination,
+            perPage: settings.data[0].audit_table_default_rows,
+          }
+        }));
+      });
+  }
+
   handleChangePage(newPage) {
     const { pagination } = this.state;
     this.setState({
